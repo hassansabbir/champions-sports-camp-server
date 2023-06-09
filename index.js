@@ -23,7 +23,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const classesCollection = client
       .db("championsSports")
@@ -39,6 +39,17 @@ async function run() {
     });
 
     //bookmarks collection
+    app.get("/bookmarks", async (req, res) => {
+      const email = req.query.email;
+      console.log(email);
+      if (!email) {
+        res.send([]);
+      }
+      const query = { email: email };
+      const result = await bookmarksCollection.find(query).toArray();
+      res.send(result);
+    });
+
     app.post("/bookmarks", async (req, res) => {
       const item = req.body;
       console.log(item);
