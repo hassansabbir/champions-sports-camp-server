@@ -35,7 +35,10 @@ async function run() {
 
     //class collection
     app.get("/classes", async (req, res) => {
-      const result = await classesCollection.find().toArray();
+      const result = await classesCollection
+        .find()
+        .sort({ totalStudent: -1 })
+        .toArray();
       res.send(result);
     });
 
