@@ -39,21 +39,15 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/classes", async (req, res) => {
-      console.log(req.query.email);
-      let query = {};
-      if (req.query?.email) {
-        query = { instructorEmail: req.query.email };
-      }
-      const result = await toysCollection
-        .find(query)
-        // .sort({ price: req.query.sort === "true" ? 1 : -1 })
+    app.get("/classes/:email", async (req, res) => {
+      const instructorEmail = req.params.email;
+      const result = await classesCollection
+        .find({ instructorEmail })
         .toArray();
-
       res.send(result);
     });
 
-    app.get("/classes/:id", async (req, res) => {
+    app.get("/singleClasses/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await classesCollection.findOne(query);
