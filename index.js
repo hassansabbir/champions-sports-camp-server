@@ -33,6 +33,9 @@ async function run() {
       .db("championsSports")
       .collection("bookmarks");
     const userCollection = client.db("championsSports").collection("users");
+    const paymentCollection = client
+      .db("championsSports")
+      .collection("payments");
 
     //class collection
     app.get("/classes", async (req, res) => {
@@ -190,7 +193,7 @@ async function run() {
       res.send(result);
     });
 
-    //create payment
+    //create payment intent
     app.post("/create-payment-intent", async (req, res) => {
       const { price } = req.body;
       const amount = parseFloat(price) * 100;
@@ -203,6 +206,24 @@ async function run() {
       res.send({
         clientSecret: paymentIntent.client_secret,
       });
+    });
+
+    // payment collection
+
+    app.get("/payments", async (req, res) => {
+      const result = await paymentCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.post("/payments", async (req, res) => {
+      const payment = req.body;
+      console.log(payment);
+      const insertResult = await paymentCollection.insertOne(payment);
+
+      const query = { _id: new ObjectId(payment.bookmarkId) };
+      const deleteResult = await bookmarksCollection.deleteOne(query);
+
+      res.send({ insertResult, deleteResult });
     });
 
     // Send a ping to confirm a successful connection
