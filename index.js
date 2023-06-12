@@ -226,6 +226,13 @@ async function run() {
       const query = { _id: new ObjectId(payment.bookmarkId) };
       const deleteResult = await bookmarksCollection.deleteOne(query);
 
+      const availableSeat = { _id: new ObjectId(payment.enrolledClassId) };
+      const classData = await classesCollection.findOne(availableSeat);
+      const seatCount = {
+        $set: { availableSeats: classData.availableSeats - 1 },
+      };
+      await classesCollection.updateOne(availableSeat, seatCount);
+
       res.send({ insertResult, deleteResult });
     });
 
